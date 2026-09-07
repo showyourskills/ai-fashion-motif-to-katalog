@@ -1,8 +1,10 @@
-# System Architecture
+# System Architecture — 100% Google Cloud AI Pipeline
 
 ## Overview
 
-The AI Fashion Motif to Katalog system is designed as a three-stage pipeline with modular components.
+The AI Fashion Motif to Katalog system is designed as a three-stage cloud-native pipeline powered entirely by **Google Cloud AI** via **Application Default Credentials (ADC)**. 
+
+No dedicated local hardware (GPU, CUDA, or heavy VRAM) is required. All heavy machine learning workloads are executed in Google Cloud.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -10,7 +12,7 @@ The AI Fashion Motif to Katalog system is designed as a three-stage pipeline wit
 │              React + TypeScript Frontend                │
 └────────────────────┬────────────────────────────────────┘
                      │
-         ┌──────────��┴───────────┐
+         ┌───────────┴───────────┐
          ↓                       ↓
    ┌──────────────┐      ┌──────────────┐
    │ Backend API  │      │ AI Pipeline  │
@@ -18,315 +20,121 @@ The AI Fashion Motif to Katalog system is designed as a three-stage pipeline wit
    │  Express)    │      │  Python)     │
    └──────┬───────┘      └──────┬───────┘
           │                     │
-   ┌──────▼─────────────────────▼──────┐
-   │       Google Cloud Services        │
-   ├────────────────────────────────────┤
-   │ • Vision API (Pattern Analysis)   │
-   │ • Vertex AI (LLM)                 │
-   │ • Cloud Storage                   │
-   └────────────────────────────────────┘
-          │
-   ┌──────▼──────────────────────────┐
-   │     AI Model Pipeline            │
-   ├──────────────────────────────────┤
-   │ Stage 1: Pattern Analysis        │
-   │ Stage 2: LLM Prompt Generation   │
-   │ Stage 3: Image Generation        │
-   └────────────────────────────────────┘
+   ┌──────▼─────────────────────▼─────────────────────────┐
+   │           Google Cloud Services (via ADC)            │
+   ├──────────────────────────────────────────────────────┤
+   │ • Vision API (Motif & Textile Analysis)              │
+   │ • Vertex AI Gemini (Catalog Prompt Engineering)      │
+   │ • Vertex AI Imagen 3 (High-Res 3/4 Mannequin Render) │
+   │ • Cloud Storage (Asset & Image Management)           │
+   └──────────────────────────────────────────────────────┘
 ```
 
-## Three-Stage Pipeline
+---
 
-### Stage 1: Pattern Analysis
+## Three-Stage Cloud Pipeline
+
+### Stage 1: Motif & Pattern Analysis (Google Cloud Vision)
 
 **Input:** Motif/Pattern Image  
-**Output:** Pattern characteristics, color palette, design recommendations
+**Output:** Dominant color palette (HEX/RGB), textile classification, texture properties  
+**Authentication:** Google Cloud ADC (`google.auth.default()`)
 
-```python
-Motif Image
+```
+Motif Image (Upload)
     ↓
 [Google Cloud Vision API]
     ↓
 Extract:
-  - Colors & palette
-  - Texture properties
-  - Pattern type
-  - Style characteristics
+  - Dominant Color Palette (Top 5 Hex/RGB)
+  - Textile Properties & Materials
+  - Pattern Characteristics
     ↓
-Analysis Report
+Analysis JSON Response
 ```
 
 **Components:**
-- `stage1_analysis/pattern_analyzer.py` - Main analysis orchestrator
-- `stage1_analysis/color_extractor.py` - Color palette extraction
-- `stage1_analysis/texture_classifier.py` - Texture type classification
-
-### Stage 2: LLM Prompt Generation
-
-**Input:** Pattern analysis, clothing type  
-**Output:** Design prompt, 3/4 mannequin instructions
-
-```python
-Pattern Analysis + User Input
-    ↓
-[Vertex AI / Google Generative AI]
-    ↓
-Generate:
-  - Design description
-  - Mannequin pose instructions
-  - Lighting recommendations
-  - Style specifications
-    ↓
-Design Prompt
-```
-
-**Components:**
-- `stage2_llm/prompt_generator.py` - Prompt creation engine
-- `stage2_llm/design_composer.py` - Design context composition
-- `stage2_llm/instruction_builder.py` - Mannequin-specific instructions
-
-### Stage 3: Image Generation
-
-**Input:** Design prompt, pattern image (optional)  
-**Output:** 3/4 mannequin design (512×512)
-
-```python
-Design Prompt + Pattern Control
-    ↓
-[Stable Diffusion + ControlNet]
-    ↓
-Generate:
-  - High-quality fashion image
-  - 3/4 mannequin pose
-  - Pattern integration
-  - Professional catalog style
-    ↓
-Final Design Katalog
-```
-
-**Components:**
-- `stage3_generation/controlnet_pipeline.py` - ControlNet inference
-- `stage3_generation/mannequin_generator.py` - Mannequin-specific generation
-- `stage3_generation/fine_tuning.py` - Custom model training
+- `stage1_analysis/pattern_analyzer.py` — Orchestrator for Vision API & color quantization.
 
 ---
 
-## Database Schema
+### Stage 2: Catalog Prompt Engineering (Google Vertex AI Gemini)
 
-### Users Collection
-```json
-{
-  "_id": ObjectId,
-  "email": "user@example.com",
-  "password_hash": "hashed_password",
-  "name": "User Name",
-  "created_at": ISODate,
-  "updated_at": ISODate
-}
+**Input:** Pattern analysis + User preference (clothing type: dress, blazer, kebaya, shirt)  
+**Output:** High-precision diffusion prompt optimized specifically for 3/4 mannequin view  
+**Authentication:** Google Cloud ADC
+
+```
+Analysis Data + Clothing Type
+    ↓
+[Vertex AI Gemini 1.5/2.0]
+    ↓
+Synthesize:
+  - 3/4 angled minimalist mannequin pose instructions
+  - Fabric drape, weave details, seam precision
+  - Neutral studio lighting & minimalist gradient backdrop
+  - Strict catalog negative prompt (headless/neutral mannequin)
+    ↓
+Structured Prompt Response
 ```
 
-### Designs Collection
-```json
-{
-  "_id": ObjectId,
-  "user_id": ObjectId,
-  "motif_image_url": "gs://bucket/motif.png",
-  "clothing_type": "dress",
-  "analysis": {
-    "colors": ["#FF6B6B", "#4ECDC4"],
-    "properties": "batik, geometric pattern",
-    "description": "..."
-  },
-  "prompt": "A beautiful 3/4 view fashion...",
-  "generated_image_url": "gs://bucket/design.png",
-  "metadata": {
-    "inference_time": 45.2,
-    "model_version": "v1.5"
-  },
-  "status": "completed",
-  "created_at": ISODate,
-  "updated_at": ISODate
-}
+**Components:**
+- `stage2_llm/prompt_generator.py` — Gemini prompt synthesizer with catalog templates.
+
+---
+
+### Stage 3: Image Generation (Google Vertex AI Imagen 3)
+
+**Input:** Synthesized catalog prompt + optional conditioning  
+**Output:** High-resolution 3/4 mannequin catalog photograph  
+**Hardware Load:** **0% Local GPU** (fully rendered by Google Cloud infrastructure)  
+**Authentication:** Google Cloud ADC
+
+```
+Catalog Prompt
+    ↓
+[Google Vertex AI Imagen 3 API]
+    ↓
+Generate:
+  - High-resolution studio photograph
+  - Realistic 3/4 mannequin presentation
+  - Seamless motif integration & textile realism
+    ↓
+Final Catalog Design (PNG/Base64)
 ```
 
-### Analytics Collection
-```json
-{
-  "_id": ObjectId,
-  "user_id": ObjectId,
-  "event_type": "design_generated",
-  "design_id": ObjectId,
-  "metrics": {
-    "stage1_time": 3.2,
-    "stage2_time": 8.1,
-    "stage3_time": 45.5
-  },
-  "timestamp": ISODate
-}
-```
+**Components:**
+- `stage3_generation/mannequin_generator.py` — Vertex AI Imagen 3 client with local preview fallback.
 
 ---
 
 ## API Flow
 
-### Complete Pipeline Flow
-
 ```
-1. User uploads motif image via React UI
+1. User uploads motif image via Frontend (React)
    ↓
-2. Frontend sends to Backend (Node.js)
-   POST /api/designs
+2. Request routed to AI Pipeline (FastAPI: POST /api/v1/full-pipeline)
    ↓
-3. Backend stores image in Google Cloud Storage
+3. Stage 1 executes: Google Cloud Vision API analyzes pattern & colors
    ↓
-4. Backend calls AI Pipeline (FastAPI)
-   POST /api/v1/full-pipeline
+4. Stage 2 executes: Vertex AI Gemini composes 3/4 mannequin catalog prompt
    ↓
-5. AI Pipeline Stage 1
-   - Google Cloud Vision API analyzes motif
-   - Returns: colors, properties, description
+5. Stage 3 executes: Vertex AI Imagen 3 generates studio catalog image
    ↓
-6. AI Pipeline Stage 2
-   - Vertex AI generates design prompt
-   - Returns: detailed prompt, instructions
-   ↓
-7. AI Pipeline Stage 3
-   - Stable Diffusion + ControlNet generates image
-   - Returns: design image URL, metadata
-   ↓
-8. Backend stores design in MongoDB
-   ↓
-9. Frontend displays result to user
+6. API returns structured JSON:
+   - Analysis data
+   - Prompt metadata
+   - Generated catalog image (Base64 / URL)
 ```
 
 ---
 
-## Deployment Architecture
+## Hardware & Deployment Specifications
 
-### Development (Docker Compose)
-
-```yaml
-Services:
-  - frontend (React/Vite) → port 3000
-  - backend (Node.js/Express) → port 5000
-  - ai_pipeline (FastAPI) → port 8000
-  - mongodb → port 27017
-```
-
-### Production (Google Cloud)
-
-```
-┌─────────────────────────────────────┐
-│   Cloud Load Balancer               │
-└────────────┬────────────────────────┘
-             │
-      ┌──────┴──────┬──────────┐
-      ↓             ↓          ↓
-  ┌────────┐  ┌────────┐  ┌────────┐
-  │Frontend│  │Backend │  │AI Pipe │
-  │Cloud   │  │Cloud   │  │Cloud   │
-  │Storage │  │Run     │  │Run     │
-  └────────┘  └────┬───┘  └───┬────┘
-                   │          │
-              ┌────▼──────────▼────┐
-              │  Cloud Storage     │
-              └────┬───────────────┘
-                   │
-              ┌────▼──────────┐
-              │ Cloud SQL or  │
-              │ MongoDB Atlas │
-              └───────────────┘
-```
-
----
-
-## Performance Considerations
-
-### Stage 1: Pattern Analysis
-- **Time:** ~3 seconds
-- **Bottleneck:** Google Cloud Vision API response
-- **Optimization:** Batch processing, caching
-
-### Stage 2: LLM Generation
-- **Time:** ~8 seconds
-- **Bottleneck:** Token generation
-- **Optimization:** Prompt caching, streaming
-
-### Stage 3: Image Generation
-- **Time:** ~45 seconds
-- **Bottleneck:** Diffusion inference steps
-- **Optimization:** LoRA reduction, distillation
-
-### Total End-to-End
-- **Time:** ~60 seconds
-- **Memory:** ~10GB VRAM
-- **Throughput:** 1 design per minute (single GPU)
-
----
-
-## Error Handling
-
-### Graceful Degradation
-
-```
-If Google Cloud Vision fails:
-  → Use fallback local image analysis
-  → Generate basic prompt from user input
-
-If Vertex AI is unavailable:
-  → Use GPT-3.5 turbo (OpenAI) as fallback
-  → Use predefined templates
-
-If GPU is unavailable:
-  → Use CPU inference (slower but works)
-  → Queue processing for later
-```
-
----
-
-## Security Considerations
-
-1. **Authentication:** JWT tokens for API access
-2. **Authorization:** User can only access own designs
-3. **Data Protection:** Encrypted at rest (Google Cloud)
-4. **API Keys:** Never commit to repository, use .env
-5. **Rate Limiting:** Prevent abuse via API throttling
-6. **Input Validation:** Sanitize all user inputs
-
----
-
-## Scalability Strategy
-
-### Horizontal Scaling
-- Multiple AI Pipeline instances on Cloud Run
-- Load balancer distributes requests
-- Shared MongoDB for data consistency
-
-### Vertical Scaling
-- Use GPU-accelerated Cloud Run
-- Increase memory allocation
-- Use TPU for inference
-
-### Caching Strategy
-- Cache analysis results
-- Cache generated prompts
-- Cache model weights
-
----
-
-## Monitoring & Logging
-
-```
-Google Cloud Logging:
-  - All API requests
-  - AI Pipeline metrics
-  - Error tracking
-  - Performance metrics
-
-Metrics to Monitor:
-  - Request latency (per stage)
-  - Error rates
-  - GPU utilization
-  - Memory usage
-  - API quota usage
-```
+| Metric | Specification |
+|---|---|
+| **Local GPU Requirement** | **None (0 MB VRAM needed)** |
+| **Local CPU/RAM** | Minimal (Standard 2GB–4GB RAM suffices) |
+| **Cloud Authentication** | Google Cloud Application Default Credentials (ADC) |
+| **Containerization** | Lightweight Python slim Docker image (~200MB) |
+| **Cloud Deployment** | Google Cloud Run (Serverless, auto-scaling to zero) |

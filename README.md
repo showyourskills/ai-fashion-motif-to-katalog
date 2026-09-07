@@ -1,19 +1,19 @@
 # 🎨 AI Fashion Motif to Katalog Generator
 
-> **Complete AI-Powered Fashion Design System**  
-> Transform motif patterns into professional 3/4 mannequin designs using Google Cloud AI, LLM, and generative models.
+> **100% Cloud-Powered AI Fashion Design System**  
+> Transform motif patterns into professional 3/4 mannequin designs using Google Cloud AI (Vision API + Vertex AI Gemini + Google Imagen 3) via Application Default Credentials (ADC).
 
-[![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Latest-009688.svg)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-18+-61DAFB.svg)](https://reactjs.org/)
-[![Google Cloud](https://img.shields.io/badge/Google%20Cloud-Integrated-FF9800.svg)](https://cloud.google.com/)
-[![Stable Diffusion](https://img.shields.io/badge/Stable%20Diffusion-ControlNet-purple.svg)](https://huggingface.co/)
+[![Google Cloud](https://img.shields.io/badge/Google%20Cloud-ADC%20Ready-FF9800.svg)](https://cloud.google.com/)
+[![Google Imagen 3](https://img.shields.io/badge/Google%20Imagen%203-Vertex%20AI-4285F4.svg)](https://cloud.google.com/vertex-ai)
 
 ---
 
 ## 🌟 Project Overview
 
-This project combines cutting-edge AI technologies from multiple sources to create a comprehensive fashion design system:
+Sistem ini dirancang 100% bertenaga cloud (*zero local hardware load*). Seluruh pemrosesan berat (analisis citra, reasoning LLM, dan perenderan gambar manekin katalog) dieksekusi langsung oleh infrastruktur Google Cloud melalui Application Default Credentials (ADC):
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -21,427 +21,150 @@ This project combines cutting-edge AI technologies from multiple sources to crea
 └────────────────────┬────────────────────────────────┘
                      ↓
 ┌─────────────────────────────────────────────────────┐
-│    STAGE 1: Google Cloud Vision + Analysis          │
-│  • Extract pattern colors & characteristics         │
-│  • Detect textile properties                        │
+│    STAGE 1: Google Cloud Vision API                 │
+│  • Ekstraksi palet warna dominan (RGB & Hex)        │
+│  • Deteksi karakteristik tekstil & pola busana      │
+│  • Otentikasi otomatis via Google Cloud ADC         │
 └────────────────────┬────────────────────────────────┘
                      ↓
 ┌─────────────────────────────────────────────────────┐
-│  STAGE 2: Vertex AI LLM + Prompt Generation         │
-│  • Generate design description from motif           │
-│  • Create 3/4 mannequin-specific instructions       │
+│  STAGE 2: Google Vertex AI (Gemini 1.5/2.0)         │
+│  • Reasoning fashion designer & art director        │
+│  • Formulasi prompt katalog manekin 3/4 profesional │
+│  • Penataan drape kain, jahitan, & pencahayaan      │
 └────────────────────┬────────────────────────────────┘
                      ↓
 ┌─────────────────────────────────────────────────────┐
-│  STAGE 3: Stable Diffusion + ControlNet             │
-│  • Pattern-aware image generation                   │
-│  • ControlNet for precise spatial control           │
-│  • 3/4 Mannequin output (512×512)                   │
-└────────────────────┬───────���────────────────────────┘
+│  STAGE 3: Google Vertex AI Imagen 3                 │
+│  • Generasi foto katalog manekin 3/4 resolusi tinggi│
+│  • Render studio minimalis tanpa beban GPU lokal    │
+│  • Otentikasi mulus via Google Cloud ADC            │
+└────────────────────┬────────────────────────────────┘
                      ↓
          ✅ Professional Design Katalog
 ```
 
 ---
 
-## ✨ Key Features
+## ✨ Fitur Utama
 
-### 📊 **Stage 1: Pattern Analysis**
-- ✅ Google Cloud Vision API integration
-- ✅ Automatic color palette extraction
-- ✅ Textile property detection
-- ✅ Pattern classification
+### 📊 **Stage 1: Analisis Motif (Google Cloud Vision)**
+- ✅ Integrasi Google Cloud Vision API via ADC
+- ✅ Ekstraksi otomatis palet warna dominan (Hex & RGB)
+- ✅ Deteksi label material & tekstil kain
+- ✅ Fallback lokal adaptif saat pengujian offline
 
-### 🤖 **Stage 2: LLM-Powered Generation**
-- ✅ Vertex AI / Google Generative AI
-- ✅ Intelligent design prompt creation
-- ✅ 3/4 mannequin-specific instructions
-- ✅ Context-aware design recommendations
-- ✅ Multi-language support
+### 🤖 **Stage 2: LLM Prompt Generator (Vertex AI Gemini)**
+- ✅ Integrasi Google Vertex AI (Gemini) via ADC
+- ✅ Prompt generator khusus **sudut pandang manekin 3/4 (3/4 mannequin view)**
+- ✅ Negative prompt standar pemotretan katalog profesional
+- ✅ Rekomendasi gaya busana kontekstual (blazer, dress, kebaya, kemeja)
 
-### 🎨 **Stage 3: Image Generation**
-- ✅ Stable Diffusion v1.5 + ControlNet
-- ✅ ControlNet Canny for pattern conditioning
-- ✅ Full model fine-tuning capability
-- ✅ 512×512 high-resolution output
-- ✅ Mannequin-focused generation
-- ✅ Custom LoRA support
-
-### 💼 **Production Ready**
-- ✅ Full-stack architecture (React + FastAPI)
-- ✅ MongoDB database integration
-- ✅ RESTful API endpoints
-- ✅ Docker support
-- ✅ Google Cloud ADC configuration
-- ✅ Scalable microservices
+### 🎨 **Stage 3: Generasi Desain Katalog (Google Imagen 3)**
+- ✅ Bertenaga Google Cloud Imagen 3 (model generasi citra tercanggih dari Google)
+- ✅ **100% Bebas Beban Hardware:** Tidak membutuhkan GPU NVIDIA, CUDA, atau VRAM besar di komputer Anda
+- ✅ Output citra studio foto tajam dan beresolusi tinggi
+- ✅ Ringan dan sangat cepat di-deploy ke Cloud Run
 
 ---
 
-## 🏗️ Project Structure
+## 🏗️ Struktur Proyek
 
 ```
 ai-fashion-motif-to-katalog/
 │
-├── 📁 frontend/                    # React TypeScript UI
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   └── App.tsx
-│   └── package.json
+├── 📁 frontend/                    # Antarmuka Pengguna (React + TypeScript)
+├── 📁 backend/                     # API Gateway (Node.js / Express)
 │
-├── 📁 backend/                     # Node.js + Express API
-│   ├── src/
-│   │   ├── routes/
-│   │   ├── middleware/
-│   │   ├── models/
-│   │   └── server.ts
-│   └── package.json
-│
-├── 📁 ai_pipeline/                 # Python FastAPI AI Service
-│   ├── stage1_analysis/            # Stage 1: Google Cloud Vision
+├── 📁 ai_pipeline/                 # Python FastAPI AI Service (Google Cloud)
+│   ├── stage1_analysis/            # Stage 1: Google Cloud Vision (ADC)
 │   │   ├── pattern_analyzer.py
-│   │   └── color_extractor.py
+│   │   └── __init__.py
 │   │
-│   ├── stage2_llm/                 # Stage 2: Vertex AI LLM
+│   ├── stage2_llm/                 # Stage 2: Vertex AI Gemini (ADC)
 │   │   ├── prompt_generator.py
-│   │   └── design_composer.py
+│   │   └── __init__.py
 │   │
-│   ├── stage3_generation/          # Stage 3: Stable Diffusion
-│   │   ├── controlnet_pipeline.py
-│   │   ├── fine_tuning.py
-│   │   └── mannequin_generator.py
+│   ├── stage3_generation/          # Stage 3: Google Vertex AI Imagen 3 (ADC)
+│   │   ├── mannequin_generator.py
+│   │   └── __init__.py
 │   │
-│   ├── app.py                      # FastAPI main app
-│   └── requirements.txt
+│   ├── tests/                      # Automated Unit & Integration Tests
+│   │   └── test_pipeline.py
+│   │
+│   ├── app.py                      # FastAPI Main Server & Swagger UI
+│   ├── Dockerfile                  # Container Deployment
+│   └── requirements.txt            # Dependensi Python minimal & modern
 │
-├── 📁 models/                      # Pre-trained models (git-lfs)
-│   ├── stable-diffusion-v1.5/
-│   ├── controlnet-canny/
-│   └── README.md
+├── 📁 scripts/                     # Skrip Otomasi & Pengujian CLI
+│   └── test_pipeline.py            # Runner pengujian pipeline dari terminal
 │
-├── 📁 datasets/                    # Training data
-│   ├── fashion-mnist/
-│   ├── afro-fashion/
-│   └── custom-patterns/
+├── 📁 docs/                        # Dokumentasi Sistem
+│   ├── GOOGLE_CLOUD_SETUP.md       # Panduan konfigurasi Google Cloud ADC
+│   └── ARCHITECTURE.md             # Blueprint arsitektur cloud
 │
-├── 📁 scripts/                     # Utility scripts
-│   ├── download_models.sh
-│   ├── setup_gcloud.sh
-│   ├── train_custom_lora.py
-│   └── test_pipeline.py
-│
-├── 📁 docs/                        # Documentation
-│   ├── SETUP_GUIDE.md
-│   ├── API_REFERENCE.md
-│   ├── GOOGLE_CLOUD_SETUP.md
-│   └── ARCHITECTURE.md
-│
-├── docker-compose.yml              # Local dev setup
-├── docker-compose.prod.yml         # Production setup
-├── .env.example                    # Environment template
-└── README.md                       # This file
+├── docker-compose.yml              # Konfigurasi container lokal
+├── .env.example                    # Template variabel lingkungan
+└── README.md
 ```
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Panduan Memulai Cepat
 
-### Prerequisites
-- Python 3.12+
-- Node.js 16+
-- Docker & Docker Compose
-- Google Cloud Account (Free tier OK)
-- CUDA 12.0+ (for GPU acceleration)
+### Prasyarat
+- Python 3.11+
+- Akun Google Cloud dengan tagihan aktif (Free Tier tersedia kuota gratis)
+- **Tidak memerlukan kartu grafis / GPU khusus** (cukup laptop atau komputer biasa)
 
-### 1️⃣ Google Cloud Setup
+### 1️⃣ Konfigurasi Google Cloud ADC
 
 ```bash
-# Install Google Cloud CLI
-curl https://sdk.cloud.google.com | bash
-exec -l $SHELL
-
-# Login to Google Cloud
+# 1. Login ke Google Cloud menggunakan Application Default Credentials (ADC)
 gcloud auth application-default login
 
-# Set project
-gcloud config set project YOUR_PROJECT_ID
+# 2. Set project ID Anda
+gcloud config set project ID_PROJECT_ANDA
 
-# Enable APIs
+# 3. Aktifkan API yang dibutuhkan
 gcloud services enable vision.googleapis.com
 gcloud services enable aiplatform.googleapis.com
 ```
 
-### 2️⃣ Clone & Setup Repository
+### 2️⃣ Menjalankan AI Pipeline Lokal
 
 ```bash
-git clone https://github.com/showyourskills/ai-fashion-motif-to-katalog.git
-cd ai-fashion-motif-to-katalog
+# Buat dan aktifkan virtual environment
+uv venv .venv
+.venv\Scripts\activate   # (di Windows)
 
-# Copy environment file
-cp .env.example .env
+# Pasang dependensi
+uv pip install -r ai_pipeline/requirements.txt
 
-# Edit .env with your Google Cloud credentials
-vim .env
+# Jalankan server FastAPI
+uvicorn ai_pipeline.app:app --reload --port 8000
 ```
+Buka Swagger UI di browser: `http://localhost:8000/docs`
 
-### 3️⃣ Run with Docker (Recommended)
-
-```bash
-# Development setup
-docker-compose up -d
-
-# Access services
-# - Frontend: http://localhost:3000
-# - Backend: http://localhost:5000
-# - AI Pipeline: http://localhost:8000/docs
-```
-
-### 4️⃣ Manual Setup
+### 3️⃣ Uji Coba Langsung via Terminal (CLI)
 
 ```bash
-# AI Pipeline
-cd ai_pipeline
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python app.py
-
-# Backend (in new terminal)
-cd backend
-npm install
-npm run dev
-
-# Frontend (in new terminal)
-cd frontend
-npm install
-npm run dev
-```
-
----
-
-## 📚 Technology Stack
-
-### **Frontend**
-- React 18 + TypeScript
-- Vite (build tool)
-- Tailwind CSS
-- Framer Motion (animations)
-- Axios (HTTP client)
-
-### **Backend**
-- Node.js 16+
-- Express.js
-- MongoDB + Mongoose
-- JWT Authentication
-- RESTful API
-
-### **AI Pipeline**
-- Python 3.12+
-- FastAPI (async framework)
-- PyTorch (deep learning)
-- Diffusers (Stable Diffusion)
-- Google Cloud Vision API
-- Google Generative AI (Vertex AI)
-- ControlNet (spatial conditioning)
-- CLIP (image embeddings)
-- FAISS (similarity search)
-
-### **Cloud & DevOps**
-- Google Cloud (Vision, Vertex AI)
-- Docker & Docker Compose
-- MongoDB Atlas (optional)
-- Cloud Storage (optional)
-
----
-
-## 🔧 API Endpoints
-
-### AI Pipeline (Port 8000)
-
-```bash
-# Stage 1: Analyze motif
-POST /api/v1/analyze
-Body: { image: File }
-Response: { colors, properties, description }
-
-# Stage 2: Generate design prompt
-POST /api/v1/generate-prompt
-Body: { analysis: Object, clothing_type: string }
-Response: { prompt, instructions, details }
-
-# Stage 3: Generate design
-POST /api/v1/generate-design
-Body: { prompt: string, pattern_image: File }
-Response: { design_image, metadata }
-
-# Complete pipeline
-POST /api/v1/full-pipeline
-Body: { image: File, clothing_type: string }
-Response: { analysis, prompt, design_image }
-
-# Health check
-GET /api/v1/health
-Response: { status, models_loaded }
-```
-
-### Backend (Port 5000)
-
-```bash
-# Authentication
-POST /api/auth/register
-POST /api/auth/login
-POST /api/auth/logout
-
-# User
-GET /api/user/profile
-PUT /api/user/profile
-
-# Designs
-GET /api/designs
-POST /api/designs
-GET /api/designs/:id
-DELETE /api/designs/:id
-
-# Analytics
-GET /api/analytics/usage
-GET /api/analytics/trends
-```
-
----
-
-## 🎯 Usage Example
-
-### Via Web UI
-1. Open http://localhost:3000
-2. Upload motif image
-3. Select clothing type (dress, shirt, jacket, etc.)
-4. Click "Generate Design"
-5. Wait for AI processing (30-60 seconds)
-6. View 3/4 mannequin design
-7. Download or refine
-
-### Via API
-
-```bash
-curl -X POST http://localhost:8000/api/v1/full-pipeline \
-  -F "image=@motif.png" \
-  -F "clothing_type=dress" \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
-
----
-
-## 📖 Documentation
-
-- **[Setup Guide](docs/SETUP_GUIDE.md)** - Detailed installation instructions
-- **[Google Cloud Setup](docs/GOOGLE_CLOUD_SETUP.md)** - ADC configuration
-- **[API Reference](docs/API_REFERENCE.md)** - Complete API documentation
-- **[Architecture](docs/ARCHITECTURE.md)** - System design & data flow
-- **[Training Guide](docs/TRAINING_GUIDE.md)** - Custom model fine-tuning
-
----
-
-## 🤝 Architecture Overview
-
-### Component Sources
-
-| Component | Source Repository | Purpose |
-|-----------|------------------|----------|
-| Full-Stack Structure | FashionAI | Production-ready architecture |
-| ControlNet Integration | Sketch2Style | Pattern-aware generation |
-| Google Cloud + LLM | AI-Fashion-Assistant-LangFlow | Image analysis & LLM |
-| Fine-tuning Methodology | Afro-Fashion-Stable-Diffusion | Custom model training |
-
----
-
-## 🧪 Testing
-
-```bash
-# Test AI pipeline
 python scripts/test_pipeline.py
-
-# Test API endpoints
-npm run test:backend
-
-# Test frontend
-npm run test:frontend
-
-# Integration tests
-sh scripts/integration_tests.sh
 ```
 
 ---
 
-## 🚢 Deployment
+## 🔧 Endpoint API (Port 8000)
 
-### Production Deployment
-
-```bash
-# Using docker-compose.prod.yml
-docker-compose -f docker-compose.prod.yml up -d
-
-# Configure SSL, domain, etc. in .env
-```
-
-### Google Cloud Deployment
-
-```bash
-# Deploy AI Pipeline to Cloud Run
-gcloud run deploy ai-fashion-pipeline \
-  --source . \
-  --platform managed \
-  --region us-central1
-
-# Deploy Frontend to Cloud Storage + CDN
-# (See docs/DEPLOYMENT_GUIDE.md for details)
-```
+| Method | Endpoint | Fungsi |
+|---|---|---|
+| `GET` | `/api/v1/health` | Status kesiapan seluruh stage AI |
+| `POST` | `/api/v1/analyze` | Stage 1: Ekstraksi warna & karakteristik motif |
+| `POST` | `/api/v1/generate-prompt` | Stage 2: Susun prompt katalog manekin 3/4 via Gemini |
+| `POST` | `/api/v1/generate-design` | Stage 3: Generasi citra via Google Imagen 3 |
+| `POST` | `/api/v1/full-pipeline` | Eksekusi lengkap (Motif $\rightarrow$ Analisis $\rightarrow$ Prompt $\rightarrow$ Katalog) |
 
 ---
 
-## 📊 Performance Metrics
-
-| Metric | Target | Current |
-|--------|--------|----------|
-| Analysis Time | <5s | ~3s |
-| LLM Generation | <10s | ~8s |
-| Design Generation | <60s | ~45s |
-| Total Pipeline | <120s | ~60s |
-| Inference Memory | <12GB | ~10GB |
-| Output Resolution | 512×512 | 512×512 |
-
----
-
-## 📝 License
-
-MIT License - See [LICENSE](LICENSE) file
-
----
-
-## 🙏 Acknowledgments
-
-### Integrated Technologies
-- [FashionAI](https://github.com/sushantfokmare/FashionAI) - Full-stack architecture
-- [Sketch2Style](https://github.com/AI688-Final-Project-Spring-2026/Sketch2Style-ControlNet-Fashion) - ControlNet fine-tuning
-- [AI-Fashion-Assistant-LangFlow](https://github.com/Swastika3647/AI-Fashion-Assistant-LangFlow) - Google Cloud integration
-- [Afro-Fashion-Stable-Diffusion](https://github.com/Abdoulaye-Sayouti/Afro-Fashion-Stable-Diffusion) - Fine-tuning methodology
-
-### Core Libraries
-- [Stable Diffusion](https://huggingface.co/runwayml/stable-diffusion-v1-5) - Image generation
-- [ControlNet](https://huggingface.co/llm-wizards/sd-controlnet-canny) - Spatial control
-- [Google Cloud AI](https://cloud.google.com/ai) - Cloud services
-- [FastAPI](https://fastapi.tiangolo.com/) - Web framework
-- [React](https://react.dev/) - Frontend framework
-
----
-
-## 📞 Support
-
-- 📧 Email: support@fashionai.com
-- 🐛 [Report Issues](https://github.com/showyourskills/ai-fashion-motif-to-katalog/issues)
-- 💬 [Discussions](https://github.com/showyourskills/ai-fashion-motif-to-katalog/discussions)
-- 📖 [Documentation](docs/)
-
----
-
-**Made with ❤️ by AI Fashion Motif to Katalog Team**
+## 📝 Lisensi
+MIT License.

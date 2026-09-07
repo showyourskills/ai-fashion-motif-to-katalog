@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  ai_pipeline:
+    build:
+      context: ./ai_pipeline
+      dockerfile: Dockerfile
+    container_name: ai_fashion_pipeline
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
+    volumes:
+      - ./ai_pipeline:/app/ai_pipeline
+    restart: unless-stopped
